@@ -1,6 +1,23 @@
 class CitiesController < ApplicationController
   before_action :set_city, only: [:show, :edit, :update, :destroy]
 
+  include ApplicationHelper
+
+  #define an Action for You Won that will list all the cities
+  # GET /cities/youwon
+  def youwon
+    @cities = City.all
+  end
+
+  #define an Action for play again that will clear out all the previous answers
+  # GET /cities/playagain
+  def playagain
+    # clear out the previous answers
+    City.delete_all
+    # redirect_to 'new_city_path' to start again
+    redirect_to :controller => "cities", :action => 'new'
+  end
+
   # GET /cities
   # GET /cities.json
   def index
@@ -15,6 +32,7 @@ class CitiesController < ApplicationController
   # GET /cities/new
   def new
     @city = City.new
+    @cities = City.all
   end
 
   # GET /cities/1/edit
@@ -24,13 +42,33 @@ class CitiesController < ApplicationController
   # POST /cities
   # POST /cities.json
   def create
+    @message = ""
+
     @city = City.new(city_params)
 
+    # use this to see if they enter a city name that is a duplicate
+    @cities = City.all
+
+    #see if the answer is correct and not a duplicate
+    correct = check_answer(@city.name)
+    is_dup = check_for_dup(@city.name,@cities)
+
+    #set messages for the cases of duplicates or wrong answers
+    if !correct
+      @message = "Wrong guess!  Try again..."
+    elsif is_dup
+      @message = "You already got that one!  Try again..."
+    end
+
     respond_to do |format|
-      if @city.save
-        format.html { redirect_to @city, notice: 'City was successfully created.' }
+      if @cities.count < 3 && correct == true && is_dup == false && @city.save
+        #format.html { redirect_to @city, notice: 'Success!  Your guess was stored for future reference below.' }
+        format.html { redirect_to new_city_path, notice: 'Success! Your guess was stored for future reference below.' }
         format.json { render :show, status: :created, location: @city }
-      else
+      elsif @cities.count == 3 && correct == true && is_dup == false && @city.save
+        format.html { redirect_to youwon_path, notice: 'Success!  You won!' }
+        format.json { render :show, status: :created, location: @city }
+      else 
         format.html { render :new }
         format.json { render json: @city.errors, status: :unprocessable_entity }
       end

@@ -1,4 +1,9 @@
 Rails.application.routes.draw do
+
+  root to: "cities#new"
+  get 'cities/youwon' => 'cities#youwon', as: :youwon
+  get 'cities/playagain' => 'cities#playagain', as: :playagain
+
   resources :cities
 
   # The priority is based upon order of creation: first created -> highest priority.
