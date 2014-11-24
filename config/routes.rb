@@ -1,10 +1,14 @@
 Rails.application.routes.draw do
 
-  root to: "cities#new"
+  root to: "main#index"
+  get 'main/index'
   get 'cities/youwon' => 'cities#youwon', as: :youwon
+  get 'states/youwon' => 'states#youwon', as: :youwonstate
   get 'cities/playagain' => 'cities#playagain', as: :playagain
+  get 'states/playagain' => 'states#playagain', as: :playagainstate
 
   resources :cities
+  resources :states
 
   # The priority is based upon order of creation: first created -> highest priority.
   # See how all your routes lay out with "rake routes".

@@ -50,7 +50,7 @@ class CitiesController < ApplicationController
     @cities = City.all
 
     #see if the answer is correct and not a duplicate
-    correct = check_answer(@city.name)
+    correct = check_answer(@city.name, 'city')
     is_dup = check_for_dup(@city.name,@cities)
 
     #set messages for the cases of duplicates or wrong answers
